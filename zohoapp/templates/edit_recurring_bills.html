@@ -2740,12 +2740,12 @@ debugger
 
      
         );
-        
+        reloadItem();
     });
   });
 
   $(document).on('click','.clone_row',function(){
-
+    reloadItem();
     var table = document.getElementById("items-table-body");
     var roinc = table.rows.length;
 

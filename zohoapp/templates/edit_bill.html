@@ -336,10 +336,9 @@ else{
               <div class="col-sm-10 d-flex align-items-center">
                   <select class="form-control text-dark" id="customer_sel" name="customer_name"
                       style="width: 52%;  background: white;">
-                      <option>Select Customer</option>
-                      <option id="crt_cust" value="{{bill.customer_name}}" selected>{{bill.customer_name}}</option>
-                      {% for cust in customers %}
-                      <option value="{{cust.customerName}}" data-pos="{{cust.placeofsupply}}">
+                      
+                      {% for cust in customers %} 
+                      <option value="{{cust.customerName}}" data-pos="{{cust.placeofsupply}}" {% if cust == cust.customerName %} selected="selected"{% endif %}>
                           {{cust.customerName}}
                       </option>
                       {% endfor %}
@@ -425,9 +424,8 @@ else{
                             <div class='form-group'>
                               <select class='form-control bg-transparent text-black border-0 item_select itm itemlist'
                                     name='item[]' id='item{{ forloop.counter }}'>
-                                    <option class='text-dark' id="items_nms" value="{{item.item_name}}" >{{item.item_name}}</option>
                                     {% for i in items %}
-                                    <option class="text-dark" value="{{i.Name}}">{{i.Name}}</option>
+                                    <option class="text-dark" value="{{i.Name}}" {% if i.Name == item.item_name %} selected="selected"{% endif %}>{{i.Name}}</option>
                                     {% endfor %}
                                 </select></div>
                         </td>
@@ -443,11 +441,12 @@ else{
                                 class='bg-transparent border-0 text-black text-right rate' name='rate[]' value="{{item.rate}}">
                         </td>
                         
-                        <td class='text-right'> <select name='tax[]' id='tax{{ forloop.counter }}' style="width: 80px;"
+                        <td class='text-right'>
+                          
+                        <input type="text" value="{{item.tax_percentage}}" hidden id="taxType{{ forloop.counter }}">
+                          <select name='tax[]' id='tax{{ forloop.counter }}' style="width: 80px;"
                           class='bg-transparent border-0 text-black text-right tax'
                           onclick='handleTaxChange({{ forloop.counter }})'> 
-                          
-                                <option value="{{item.tax_percentage}}"  id="taxType" selected>{{item.tax_percentage}}%</option> 
                                 <optgroup label="GST" style="display: none;">
                                   <option value=0>0% GST</option>
                                   <option value=3>3% GST</option>
@@ -2300,24 +2299,21 @@ select = $('#customer_sel').val();
 
                     if(isGST()){ debugger
                       $('#item_table tbody tr').each(function (Value, index,){ debugger
+                       
                         let ind = Value+1
+                          var tax = $('#taxType'+ind).val();
                            $('#tax'+ind+' optgroup[label="GST"]').show();
                            $('#tax'+ind+' optgroup[label="IGST"]').hide();  
-                           a =  $('#tax'+ind+' #taxType').text()
-                           if(a.indexOf("GST") == -1){
-                           $('#tax'+ind+' #taxType').text(a +" GST");
-                           }  
+                           $('#tax'+ind+' optgroup[label="GST"] option[value="' + tax + '"]').prop('selected', true);
                       });
 
                        } else {
                         $('#item_table tbody tr').each(function (Value, index,){debugger
                           let ind = Value+1
+                          var tax = $('#taxType'+ind).val();
                            $('#tax'+ind+' optgroup[label="GST"]').hide();
                           $('#tax'+ind+' optgroup[label="IGST"]').show(); 
-                           a =  $('#tax'+ind+' #taxType').text()
-                           if(a.indexOf("IGST") == -1){
-                           $('#tax'+ind+' #taxType').text(a +" IGST");
-                           } 
+                          $('#tax'+ind+' optgroup[label="IGST"] option[value="' + tax + '"]').prop('selected', true);
                           }); 
                        } 
                 }
@@ -2327,25 +2323,6 @@ select = $('#customer_sel').val();
            
 });
 
-document.addEventListener("DOMContentLoaded", function() { debugger
-                        // var pos = document.getElementById("pos").value.split("-")[1];
-                        // var sos = document.getElementById("state").value;
-                        if(isGST()){
-                           $('#tax1 optgroup[label="GST"]').show();
-                           $('#tax1 optgroup[label="IGST"]').hide(); 
-                           a =  $("#taxType").text()
-                           if(a.indexOf("GST") == -1){
-                           $("#taxType").text(a +" GST");
-                           }
-                       } else {
-                           $('#tax1 optgroup[label="GST"]').hide();
-                           $('#tax1 optgroup[label="IGST"]').show();  
-                           a =  $("#taxType").text()
-                           if(a.indexOf("IGST") == -1){
-                           $("#taxType").text(a +" IGST");
-                           } 
-                       }  
-                     });
     $(document).ready(function () {
         $('#customer_sel').on('change', function () {
             select = $('#customer_sel').val();
@@ -2400,18 +2377,13 @@ document.addEventListener("DOMContentLoaded", function() { debugger
 
               $("#cust_state").val(response.state);
               if(isGST()){debugger
-                          //  $('#tax1 optgroup[label="GST"]').show();
-                          //  $('#tax1 optgroup[label="IGST"]').hide(); 
-                          //  a =  $("#taxType").text()
-                          //  if(a.indexOf("IGST") == -1){
-                          //  $("#taxType").text(a +" IGST");
+                       
                           $('#item_table tbody tr').each(function (Value, index,){ debugger
                             var tax = $(this).find('.tax').val();
                             let ind = Value+1
                            $('#tax'+ind+' optgroup[label="GST"]').show();
                            $('#tax'+ind+' optgroup[label="IGST"]').hide();  
-                           a =  $('#tax'+ind+' #taxType').text() 
-                           $('#tax'+ind+' option:selected').html(tax+'% GST'); 
+                           $('#tax'+ind+' optgroup[label="GST"] option[value="' + tax + '"]').prop('selected', true);
                       }); 
                       document.getElementById("tr_cgst").style.display = "table-row";
                       document.getElementById("tr_sgst").style.display = "table-row";
@@ -2422,9 +2394,8 @@ document.addEventListener("DOMContentLoaded", function() { debugger
                           var tax = $(this).find('.tax').val();
                           let ind = Value+1
                            $('#tax'+ind+' optgroup[label="GST"]').hide();
-                          $('#tax'+ind+' optgroup[label="IGST"]').show(); 
-                           a =  $('#tax'+ind+' #taxType').text() 
-                            $('#tax'+ind+' option:selected').html(tax+'% IGST'); 
+                           $('#tax'+ind+' optgroup[label="IGST"]').show(); 
+                           $('#tax'+ind+' optgroup[label="IGST"] option[value="' + tax + '"]').prop('selected', true);
                           }); 
 
                           document.getElementById('tr_igst').style.display = "table-row";
@@ -2620,10 +2591,8 @@ $(document).ready(function () {
                 <td>
                     <div class='form-group'>
                         <select
-                            class='form-control bg-transparent text-black border-0 item_select itm itemlist' name='item[]'
-                            id='item${RowCount}'>
-                            <option class='text-dark'>Select Items</option>
-                            <option class='text-dark' id='items_nms1' ></option>
+                            class='form-control bg-transparent text-black border-0 item_select itm itemlist listAdditem' name='item[]'
+                            id='item${RowCount}'> 
                             {% for i in items %}
                             <option class="text-dark" value="{{i.Name}}">{{i.Name}}</option>
                             {% endfor %}
@@ -2678,32 +2647,18 @@ $(document).ready(function () {
                         style='width:20px'><i class='fa fa-times'></i></button></td>
             </tr>`);
             $('#item_table').append(newRow);
-            reloadItem();
-            if(isGST()){debugger
-                          //  $('#tax1 optgroup[label="GST"]').show();
-                          //  $('#tax1 optgroup[label="IGST"]').hide(); 
-                          //  a =  $("#taxType").text()
-                          //  if(a.indexOf("IGST") == -1){
-                          //  $("#taxType").text(a +" IGST");
-                          $('#item_table tbody tr').each(function (Value, index,){ debugger
-                            var tax = $(this).find('.tax').val();
-                            let ind = Value+1
-                           $('#tax'+ind+' optgroup[label="GST"]').show();
-                           $('#tax'+ind+' optgroup[label="IGST"]').hide();  
-                           a =  $('#tax'+ind+' #taxType').text() 
-                          $('#tax'+ind+' option:selected').html(tax+'% GST'); 
-                      }); 
-
-                       } else {
-                        $('#item_table tbody tr').each(function (Value, index,){debugger
-                          var tax = $(this).find('.tax').val();
-                          let ind = Value+1
-                           $('#tax'+ind+' optgroup[label="GST"]').hide();
-                          $('#tax'+ind+' optgroup[label="IGST"]').show(); 
-                           a =  $('#tax'+ind+' #taxType').text()
-                           $('#tax'+ind+' option:selected').html(tax+'% IGST');
-                          }); 
-                       } 
+            reloadItem(); 
+            var tax = 0;
+            if(isGST()){ 
+             $(`#tax${RowCount} optgroup[label="GST"]`).show();
+             $(`#tax${RowCount} optgroup[label="IGST"]`).hide();  
+             $('#tax'+RowCount+' optgroup[label="GST"] option[value="' + tax + '"]').prop('selected', true);
+             } 
+             else {
+             $(`#tax${RowCount} optgroup[label="GST"]`).hide();
+             $(`#tax${RowCount} optgroup[label="IGST"]`).show(); 
+             $('#tax'+RowCount+' optgroup[label="IGST"] option[value="' + tax + '"]').prop('selected', true);
+            }
         });
 
         //Duplicate row function
@@ -2737,7 +2692,7 @@ $(document).ready(function () {
                 <td>
                     <div class='form-group'>
                         <select
-                            class='form-control bg-transparent text-black border-0 item_select itemlist' name='item[]'
+                            class='form-control bg-transparent text-black border-0 item_select itemlist listCopyitem' name='item[]'
                             id='item${RowCount}'>
                             <option class='text-dark ' value='${currentItem}'>${currentItem}</option>
                             {% for i in items %}
@@ -2759,8 +2714,7 @@ $(document).ready(function () {
                
                 <td class='text-right'> <select name='tax[]' id='tax${RowCount}' style="width: 80px;"
                         class="form-control bg-transparent text-black text-right border-0 tax"
-                        onclick='handleTaxChange(${RowCount})'>
-                        <option  value='${currentTax}'>${currentTaxText}</option>
+                        onclick='handleTaxChange(${RowCount})'> 
                         <optgroup label="GST" >
                                 <option value=0>0% GST</option>
                                 <option value=3>3% GST</option>
@@ -2799,6 +2753,17 @@ $(document).ready(function () {
             $('#item_table').append(newRow);
             calc_total();
             reloadItem();
+            var tax = $('#tax'+RowCount).val();
+            if(isGST()){ 
+             $(`#tax${RowCount} optgroup[label="GST"]`).show();
+             $(`#tax${RowCount} optgroup[label="IGST"]`).hide();  
+             $('#tax'+RowCount+' optgroup[label="GST"] option[value="' + currentTax + '"]').prop('selected', true);
+             } 
+             else {
+             $(`#tax${RowCount} optgroup[label="GST"]`).hide();
+             $(`#tax${RowCount} optgroup[label="IGST"]`).show(); 
+             $('#tax'+RowCount+' optgroup[label="IGST"] option[value="' + currentTax + '"]').prop('selected', true);
+            }
         });
 
         // Delete row
@@ -3487,16 +3452,32 @@ $.ajax({
     dataType: "json",
     data: $(this).serialize(),
     csrfmiddlewaretoken: '{{ csrf_token }}',
-    success: function(data) {
-      var dropdown = $('.itemlist');
-      
-      
-      
+    success: function(data) { debugger
+      var dropdown = $('.itemlist'); 
+      var dropdownCopyitem = $('.listCopyitem'); 
+      var dropdownAdditem = $('.listAdditem'); 
+
+      var options = $('.itemlist option'); 
+      var optionsCopyitem = $('.listCopyitem option'); 
+      var optionsAdditem  = $('.listAdditem option'); 
+
+      var items = $.map(options, e => $(e).val())
+      var itemsCopy = $.map(optionsCopyitem, e => $(e).val())
+      var itemsAdd = $.map(optionsAdditem, e => $(e).val())
+
       $.each(data, function(key, value) {
+        if(items.indexOf(value[0])==-1){
         dropdown.append($('<option></option>').attr('value', key).text(value[0]).val(value[0]));
-        
-        
+        } 
+        if(itemsCopy.indexOf(value[0])==-1){
+          dropdownCopyitem.append($('<option></option>').attr('value', key).text(value[0]).val(value[0]));
+        } 
+        if(itemsAdd.indexOf(value[0])==-1){
+          dropdownAdditem.append($('<option></option>').attr('value', key).text(value[0]).val(value[0]));
+        } 
       });
+
+
     },
     error: function(xhr, status, error) {
       console.error(xhr.responseText);
@@ -3647,20 +3628,7 @@ $.ajax({
 
                     document.getElementById('rate1').value = rate
                     document.getElementById('HSN1').value = response.hsn
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax1 optgroup[label="GST"]').show();
-                           $('#tax1 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax1 optgroup[label="GST"]').hide();
-                           $('#tax1 optgroup[label="IGST"]').show();
-                       }
-                   });
+                    itemchangewithtax(1);
                 }
             });
 
@@ -3683,21 +3651,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate2').value = rate;
                     document.getElementById('HSN2').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax2 optgroup[label="GST"]').show();
-                           $('#tax2 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax2 optgroup[label="GST"]').hide();
-                           $('#tax2 optgroup[label="IGST"]').show();
-                       }
-                   });
+                    itemchangewithtax(2);
                 }
             });
 
@@ -3720,21 +3674,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate3').value = rate;
                     document.getElementById('HSN3').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax3 optgroup[label="GST"]').show();
-                           $('#tax3 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax3 optgroup[label="GST"]').hide();
-                           $('#tax3 optgroup[label="IGST"]').show();
-                       }
-                   });
+                    itemchangewithtax(3);
                 }
             });
 
@@ -3757,21 +3697,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate4').value = rate;
                     document.getElementById('HSN4').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax4 optgroup[label="GST"]').show();
-                           $('#tax4 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax4 optgroup[label="GST"]').hide();
-                           $('#tax4 optgroup[label="IGST"]').show();
-                       }
-                   });
+                    itemchangewithtax(4);
                 }
             });
 
@@ -3794,21 +3720,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate5').value = rate;
                     document.getElementById('HSN5').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax5 optgroup[label="GST"]').show();
-                           $('#tax5 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax5 optgroup[label="GST"]').hide();
-                           $('#tax5 optgroup[label="IGST"]').show();
-                       }
-                   });
+                    itemchangewithtax(5);
                 }
             });
 
@@ -3831,21 +3743,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate6').value = rate;
                     document.getElementById('HSN6').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax6 optgroup[label="GST"]').show();
-                           $('#tax6 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax6 optgroup[label="GST"]').hide();
-                           $('#tax6 optgroup[label="IGST"]').show();
-                       }
-                   });
+                    itemchangewithtax(6);
                 }
             });
 
@@ -3868,21 +3766,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate7').value = rate;
                     document.getElementById('HSN7').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax7 optgroup[label="GST"]').show();
-                           $('#tax7 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax7 optgroup[label="GST"]').hide();
-                           $('#tax7 optgroup[label="IGST"]').show();
-                       }
-                   });
+                    itemchangewithtax(7);
                 }
             });
 
@@ -3905,21 +3789,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate8').value = rate;
                     document.getElementById('HSN8').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax8 optgroup[label="GST"]').show();
-                           $('#tax8 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax8 optgroup[label="GST"]').hide();
-                           $('#tax8 optgroup[label="IGST"]').show();
-                       }
-                   });
+                    itemchangewithtax(8);
                 }
             });
 
@@ -3942,21 +3812,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate9').value = rate;
                     document.getElementById('HSN9').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax9 optgroup[label="GST"]').show();
-                           $('#tax9 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax9 optgroup[label="GST"]').hide();
-                           $('#tax9 optgroup[label="IGST"]').show();
-                       }
-                   });
+                    itemchangewithtax(9);
                 }
             });
 
@@ -3979,24 +3835,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate10').value = rate;
                     document.getElementById('HSN10').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax10 optgroup[label="GST"]').show();
-                           $('#tax10 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax10 optgroup[label="GST"]').hide();
-                           $('#tax10 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
-
+                    itemchangewithtax(10);
                 }
             });
 
@@ -4019,24 +3858,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate11').value = rate;
                     document.getElementById('HSN11').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax11 optgroup[label="GST"]').show();
-                           $('#tax11 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax11 optgroup[label="GST"]').hide();
-                           $('#tax11 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
-
+                    itemchangewithtax(11);
                 }
             });
 
@@ -4059,24 +3881,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate12').value = rate;
                     document.getElementById('HSN12').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax12 optgroup[label="GST"]').show();
-                           $('#tax12 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax12 optgroup[label="GST"]').hide();
-                           $('#tax12 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
-
+                    itemchangewithtax(12);
                 }
             });
 
@@ -4099,24 +3904,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate13').value = rate;
                     document.getElementById('HSN13').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax13 optgroup[label="GST"]').show();
-                           $('#tax13 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax13 optgroup[label="GST"]').hide();
-                           $('#tax13 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
-
+                    itemchangewithtax(13);
                 }
             });
 
@@ -4139,24 +3927,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate14').value = rate;
                     document.getElementById('HSN14').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax14 optgroup[label="GST"]').show();
-                           $('#tax14 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax14 optgroup[label="GST"]').hide();
-                           $('#tax14 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
-
+                    itemchangewithtax(14);
                 }
             });
 
@@ -4179,24 +3950,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate15').value = rate;
                     document.getElementById('HSN15').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax15 optgroup[label="GST"]').show();
-                           $('#tax15 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax15 optgroup[label="GST"]').hide();
-                           $('#tax15 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
-
+                    itemchangewithtax(15);
                 }
             });
 
@@ -4219,23 +3973,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate16').value = rate;
                     document.getElementById('HSN16').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax16 optgroup[label="GST"]').show();
-                           $('#tax16 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax16 optgroup[label="GST"]').hide();
-                           $('#tax16 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
+                    itemchangewithtax(16);
 
                 }
             });
@@ -4259,23 +3997,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate17').value = rate;
                     document.getElementById('HSN17').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax17 optgroup[label="GST"]').show();
-                           $('#tax17 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax17 optgroup[label="GST"]').hide();
-                           $('#tax17 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
+                    itemchangewithtax(17);
 
                 }
             });
@@ -4299,24 +4021,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate18').value = rate;
                     document.getElementById('HSN18').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax18 optgroup[label="GST"]').show();
-                           $('#tax18 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax18 optgroup[label="GST"]').hide();
-                           $('#tax18 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
-
+                    itemchangewithtax(18);
                 }
             });
 
@@ -4339,23 +4044,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate19').value = rate;
                     document.getElementById('HSN19').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax19 optgroup[label="GST"]').show();
-                           $('#tax19 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax19 optgroup[label="GST"]').hide();
-                           $('#tax19 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
+                    itemchangewithtax(19);
 
                 }
             });
@@ -4379,23 +4068,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate20').value = rate;
                     document.getElementById('HSN20').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax20 optgroup[label="GST"]').show();
-                           $('#tax20 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax20 optgroup[label="GST"]').hide();
-                           $('#tax20 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
+                    itemchangewithtax(20);
 
                 }
             });
@@ -4419,23 +4092,7 @@ $.ajax({
                     rate = response.rate
                     document.getElementById('rate21').value = rate;
                     document.getElementById('HSN21').value = response.hsn
-
-                    // var pos = document.getElementById("pos").value;
-                    // var sos = document.getElementById("sos").value;
-                    // var pos = document.getElementById("pos").value.split("-")[1];
-                    // var sos = document.getElementById("state").value;
-
-                    $(document).ready(function() {
-                      if(isGST()){
-                           $('#tax21 optgroup[label="GST"]').show();
-                           $('#tax21 optgroup[label="IGST"]').hide();
-                       } else {
-                           $('#tax21 optgroup[label="GST"]').hide();
-                           $('#tax21 optgroup[label="IGST"]').show();
-                       }
-                   });
-
-
+                    itemchangewithtax(21);
 
                 }
             });
@@ -4849,4 +4506,25 @@ $(document).ready(function() {
       }
   }
   </script>
+  <script>
+    function itemchangewithtax(index){
+                       var tax = $('#tax'+index).val();
+                        if(isGST()) {
+                             $('#tax'+index+' optgroup[label="GST"]').show();
+                             $('#tax'+index+' optgroup[label="IGST"]').hide();
+                             $('#tax'+index+' optgroup[label="GST"] option[value="' + tax + '"]').prop('selected', true); 
+                         } else {
+                             $('#tax'+index+' optgroup[label="GST"]').hide();
+                             $('#tax'+index+' optgroup[label="IGST"]').show(); 
+                             $('#tax'+index+' optgroup[label="IGST"] option[value="' + tax + '"]').prop('selected', true);                       
+                         } 
+    }
+  </script>
+
+  <!-- <script>
+  $(document).ready(function(){
+   reloadItem();
+  });
+</script> -->
+   
 {% endblock %}
