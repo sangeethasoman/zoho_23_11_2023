@@ -270,7 +270,8 @@ debugger
               <div class="col-sm-2"><label class="text-right">Payment Terms</label></div>
               <div class="col-sm-5 d-flex align-items-center"  style="width: 49%;"> 
                   <select id="p_terms" name="p_terms"
-                  class="form-control bg-white text-dark">
+                  class="form-control bg-white text-dark" >
+                  
                       
                       <option id="crt_term" selected></option>
                      
@@ -286,6 +287,7 @@ debugger
                       <i class="fas fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); "
                           data-toggle="tooltip" title="Configure Terms"></i>
                   </button>
+                  
               </div>
             </div>
             
@@ -392,7 +394,7 @@ debugger
                                 </select></div>
                         </td>
                         <td class='text-right' style="width: 50%;">
-                          <input type="text" value="0" name='HSN[]' id="HSN1" style="width: 52px;" placeholder='HSN' class='bg-transparent border-0 text-black text-right HSN'  />
+                          <input type="text" value="0" name='HSN[]' id="HSN1"  placeholder='HSN' class='bg-transparent border-0 text-black text-right HSN' style="width: 60px;" />
                         </td>
           
                         <td class='text-right'><input type='number' id='qty1' style="width: 50px;"
@@ -2385,8 +2387,8 @@ debugger
                         </select></div>
                 </td>
                 <td class='text-right' style="width: 50%;">
-                  <input type='number' id='HSN${RowCount}'
-                   class='bg-transparent border-0 text-black text-right HSN' name='HSN[]' value='0' min="0" style="width: 70px;">
+                  <input type='text' id='HSN${RowCount}'
+                   class='bg-transparent border-0 text-black text-right HSN' name='HSN[]' value='0' min="0" style="width: 60px;" >
                 </td>
                 
                 <td class='text-right'><input type='number' id='qty${RowCount}' style="width: 50px;"
@@ -2490,8 +2492,8 @@ debugger
                 </td>
                 <td class='text-right' style="width: 50%;">
                   
-                  <input type='number' id='HSN${RowCount}' value="${currentHSN}"
-                        class='bg-transparent border-0 text-black text-right HSN' name='HSN[]' style="width: 70px;" value='0' min="0">
+                  <input type='text' id='HSN${RowCount}' value="${currentHSN}"
+                        class='bg-transparent border-0 text-black text-right HSN' name='HSN[]'  value='0' min="0" style="width: 60px;">
                 </td>
                
                 <td class='text-right'><input type='number' id='qty${RowCount}' value="${currentQuantity}" style="width: 50px;"
@@ -3377,13 +3379,20 @@ $.ajax({
   csrfmiddlewaretoken: '{{ csrf_token }}',
 
   success: function(data) {
-    var dropdown = $('.itemlist');
-    dropdown.empty();
 
-    $.each(data, function(key, value) {
-      debugger
-        dropdown.append($('<option></option>').attr('value', key).text(value[0]).val(value[0]));
-    });
+    $('.itemlist').each(function(index, options) { 
+         debugger
+          var $select = $(this); 
+          let items = $.map(options, e => $(e).val()) 
+
+          $.each(data, function(key, value) {
+            debugger
+            if(items.indexOf(value[0])==-1){
+              $select.append($('<option></option>').attr('value', key).text(value[0]).val(value[0])); 
+            } 
+          });
+
+      }); 
 
   },
   error: function(xhr, status, error) {
@@ -4366,10 +4375,27 @@ $('#due_date').prop('disabled', true);
   }
 </script>
  
-<!-- <script>
-  $(document).ready(function(){
-   reloadItem();
+<script>
+  function validateForm() {
+      var paymentTerms = document.getElementById("p_terms").value;
+      if (paymentTerms === "") {
+          document.getElementById("p_terms").classList.add("is-invalid");
+          document.getElementById("p_terms").classList.remove("is-valid");
+          return false;
+      } else {
+          document.getElementById("p_terms").classList.remove("is-invalid");
+          document.getElementById("p_terms").classList.add("is-valid");
+          return true;
+      }
+  }
+
+  // Validate the form on submit
+  document.getElementById("forms").addEventListener("submit", function (event) {
+      if (!validateForm()) {
+          event.preventDefault();
+      }
   });
-</script> -->
+</script>
+
 
 {% endblock %}

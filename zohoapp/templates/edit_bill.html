@@ -430,7 +430,7 @@ else{
                                 </select></div>
                         </td>
                        
-                        <td class='text-right'><input  type="number" value="{{item.hsn}}"  name='HSN[]' id="HSN{{ forloop.counter }}" placeholder='HSN' style="width: 80px;" 
+                        <td class='text-right'><input  type="text" value="{{item.hsn}}"  name='HSN[]' id="HSN{{ forloop.counter }}" placeholder='HSN' style="width: 80px;" 
                           class='bg-transparent border-0 text-black text-right HSN' style="width: 50px;">
                         </td>
                       
@@ -2598,8 +2598,8 @@ $(document).ready(function () {
                             {% endfor %}
                         </select></div>
                 </td>
-                <td class='text-right'><input type='number' id='HSN${RowCount}'
-                  class='bg-transparent border-0 text-black text-right HSN' name='HSN[]' style="width: 70px;" value='0' min="0"></td>
+                <td class='text-right'><input type='text' id='HSN${RowCount}'
+                  class='bg-transparent border-0 text-black text-right HSN' name='HSN[]' style="width: 50px;" value='0' min="0"></td>
                 
                 <td class='text-right'><input type='number' id='qty${RowCount}' style="width: 50px;"
                         class='bg-transparent border-0 text-black text-right qty' name='quantity[]' value='0' >
@@ -2699,10 +2699,10 @@ $(document).ready(function () {
                             <option class="text-dark" value="{{i.Name}}">{{i.Name}}</option>
                             {% endfor %}
                         </select></div>
-                </td>debugger
+                </td>
                 <td style="width: 50%;">
-                        <input type='number' id='HSN${RowCount}' value="${currentHSN}" 
-                        class='bg-transparent border-0 text-black text-right HSN' name='HSN[]' style="width: 70px;" value='0' min="0">
+                        <input type='text' id='HSN${RowCount}' value="${currentHSN}" 
+                        class='bg-transparent border-0 text-black text-right HSN' name='HSN[]' style="width: 50px;" value='0' min="0">
                 </td>
                 
                 <td class='text-right'><input type='number' id='qty${RowCount}' value="${currentQuantity}" style="width: 50px;"
@@ -3453,30 +3453,19 @@ $.ajax({
     data: $(this).serialize(),
     csrfmiddlewaretoken: '{{ csrf_token }}',
     success: function(data) { debugger
-      var dropdown = $('.itemlist'); 
-      var dropdownCopyitem = $('.listCopyitem'); 
-      var dropdownAdditem = $('.listAdditem'); 
+      $('.itemlist').each(function(index, options) { 
+         debugger
+          var $select = $(this); 
+          let items = $.map(options, e => $(e).val()) 
 
-      var options = $('.itemlist option'); 
-      var optionsCopyitem = $('.listCopyitem option'); 
-      var optionsAdditem  = $('.listAdditem option'); 
+          $.each(data, function(key, value) {
+            debugger
+            if(items.indexOf(value[0])==-1){
+              $select.append($('<option></option>').attr('value', key).text(value[0]).val(value[0])); 
+            } 
+          });
 
-      var items = $.map(options, e => $(e).val())
-      var itemsCopy = $.map(optionsCopyitem, e => $(e).val())
-      var itemsAdd = $.map(optionsAdditem, e => $(e).val())
-
-      $.each(data, function(key, value) {
-        if(items.indexOf(value[0])==-1){
-        dropdown.append($('<option></option>').attr('value', key).text(value[0]).val(value[0]));
-        } 
-        if(itemsCopy.indexOf(value[0])==-1){
-          dropdownCopyitem.append($('<option></option>').attr('value', key).text(value[0]).val(value[0]));
-        } 
-        if(itemsAdd.indexOf(value[0])==-1){
-          dropdownAdditem.append($('<option></option>').attr('value', key).text(value[0]).val(value[0]));
-        } 
-      });
-
+      }); 
 
     },
     error: function(xhr, status, error) {
@@ -4521,10 +4510,26 @@ $(document).ready(function() {
     }
   </script>
 
-  <!-- <script>
-  $(document).ready(function(){
-   reloadItem();
+<script>
+  function validateForm() {
+      var paymentTerms = document.getElementById("p_terms").value;
+      if (paymentTerms === "") {
+          document.getElementById("p_terms").classList.add("is-invalid");
+          document.getElementById("p_terms").classList.remove("is-valid");
+          return false;
+      } else {
+          document.getElementById("p_terms").classList.remove("is-invalid");
+          document.getElementById("p_terms").classList.add("is-valid");
+          return true;
+      }
+  }
+
+  // Validate the form on submit
+  document.getElementById("forms").addEventListener("submit", function (event) {
+      if (!validateForm()) {
+          event.preventDefault();
+      }
   });
-</script> -->
+</script>
    
 {% endblock %}

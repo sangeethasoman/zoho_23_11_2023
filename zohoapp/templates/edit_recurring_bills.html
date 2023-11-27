@@ -119,7 +119,7 @@
         </div>
         <div class="col-md-3">
           <a data-toggle="modal" data-target="#newvendor">
-            <i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 34px; " 
+            <i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 36px; " 
                 data-toggle="tooltip" title="Create Vendor"></i>
           </a>
         </div>
@@ -181,15 +181,7 @@
 
         <div class="col-md-6">
           <div class="d-flex">
-            <!-- <select class="form-control text-dark bg-light" required name="repeat">
-                <option selected value="{{recur_bills.repeat_every}}">{{recur_bills.repeat_every}}</option>
-                <option value="1 Week">Week</option>
-               
-                <option value="1 Month">Month</option>
-                
-                <option value="1 Year">Years</option>
-               
-            </select> -->
+            
            
             <select class="form-control text-dark bg-light" id="repeats"  name="repeats"> 
               <option selected value="{{recur_bills.repeat_every}}">{{recur_bills.repeat_every}}</option>
@@ -199,7 +191,7 @@
         </div>
         <div class="col-md-3">
           <a data-toggle="modal" data-target="#newrepeat">
-            <i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 34px;"
+            <i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 36px;"
                 data-toggle="tooltip" title="Add Repeat"></i>
         </a>
         </div>
@@ -267,9 +259,12 @@
             </select>
 
           </div> 
-          <a href="" data-toggle="modal" data-target="#newpayment"><i class="fa fa-gear"></i> Configure Payment Terms</a>
+          
   
         </div>
+        <div class="col-md-3">
+          <a data-toggle="modal" data-target="#newpayment"><i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 36px;"></i></a>
+          </div>
       </div>  
 
       <div class="row mb-5 mt-2">
@@ -303,7 +298,7 @@
         </div>
         <div class="col-md-3 ">
           <a  data-toggle="modal" data-target="#newcustomer">
-            <i class="fas fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 34px;"
+            <i class="fas fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 36px;"
                 data-toggle="tooltip" title="Create Customer"></i>
           </a>
         </div>
@@ -379,8 +374,8 @@
                     
                   </div>  
                 </td>
-                <td  style="width: 50%;">
-                  <input type="text" value="{{ri.hsn}}" name='HSN[]' id="HSN{{forloop.counter|add:'-1'}}" placeholder='HSN' class="form-control HSN text-dark bg-light"  style="width: 100px; " />
+                <td  style="width: 11%;">
+                  <input type="text" value="{{ri.hsn}}" name='HSN[]' id="HSN{{forloop.counter|add:'-1'}}" placeholder='HSN' class="form-control HSN text-dark bg-light"  style="width: 80px; " />
                 </td>
 
                
@@ -2686,7 +2681,7 @@ debugger
             </div>  
           </td>
           <td style="width: 11%;">
-            <input type="text" name='HSN[]' id="HSN${roinc}" placeholder='HSN' class="form-control HSN text-dark bg-light" step="0.00" min="0" style = "width:100px;" />
+            <input type="text" name='HSN[]' id="HSN${roinc}" placeholder='HSN' class="form-control HSN text-dark bg-light" step="0.00" min="0" style = "width:80px;" />
           </td>
          
           <td style="width: 10%;">
@@ -3472,24 +3467,19 @@ function reloadItem() {
     csrfmiddlewaretoken: '{{ csrf_token }}',
 
     success: function(data) { debugger
-      var dropdown = $('.item');
-      //dropdown.empty();
+      $('.item').each(function(index, options) { 
+         debugger
+          var $select = $(this); 
+          let items = $.map(options, e => $(e).val()) 
 
-      // $.each(data, function(key, value) {
-        
-      //     dropdown.append($('<option></option>').attr('value', key).text(value[0]).val(key));
-      // });
+          $.each(data, function(key, value) {
+            
+            if(items.indexOf(key)==-1){
+              $select.append($('<option></option>').attr('value', key).text(value[0]).val(key));
+            } 
+          });
 
-      var keys = Object.keys(data).map(Number).sort((a, b) => a - b);
-
-      // Find the last key in the sorted array of keys
-      var lastKey = keys[keys.length - 1];
-
-      // Access the last element using the last key
-      var lastElement = data[lastKey];
-       
-      dropdown.append($('<option></option>').text(lastElement[0]).val(lastElement[1])); 
-
+      }); 
     },
     error: function(xhr, status, error) {
     console.error(xhr.responseText);
@@ -4286,9 +4276,25 @@ else{
   }
 </script>
 
-<!-- <script>
-  $(document).ready(function(){
-   reloadItem();
+<script>
+  function validateForm() {
+      var paymentTerms = document.getElementById("date2").value;
+      if (paymentTerms === "") {
+          document.getElementById("date2").classList.add("is-invalid");
+          document.getElementById("date2").classList.remove("is-valid");
+          return false;
+      } else {
+          document.getElementById("date2").classList.remove("is-invalid");
+          document.getElementById("date2").classList.add("is-valid");
+          return true;
+      }
+  }
+
+  // Validate the form on submit
+  document.getElementById("forms").addEventListener("submit", function (event) {
+      if (!validateForm()) {
+          event.preventDefault();
+      }
   });
-</script> -->
+</script>
 {% endblock %}

@@ -116,7 +116,7 @@
         </div>
         <div class="col-md-3">
           <a data-toggle="modal" data-target="#newvendor">
-            <i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 34px; "
+            <i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 36px; "
                 data-toggle="tooltip" title="Create Vendor"></i>
         </a>
       </div>
@@ -185,7 +185,7 @@
         </div>
         <div class="col-md-3">
           <a data-toggle="modal" data-target="#newrepeat">
-            <i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 34px;"
+            <i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 36px;"
                 data-toggle="tooltip" title="Add Repeat"></i>
         </a>
         </div>
@@ -241,11 +241,13 @@
               {% endfor %}
              
             </select>
-
+           
           </div> 
-          <a href="" data-toggle="modal" data-target="#newpayment"><i class="fa fa-gear"></i> Configure Payment Terms</a>
-  
+         
         </div>
+        <div class="col-md-3">
+          <a data-toggle="modal" data-target="#newpayment"><i class="fas fa-plus p-2 rounded " style="color: white; background-color: rgb(210, 132, 30); height: 36px;"></i></a>
+          </div>
       </div>  
 
       <div class="row mb-5 mt-2">
@@ -277,7 +279,7 @@
 
         <div class="col-md-3 mt-2">
           <a data-toggle="modal" data-target="#newcustomer">
-            <i class="fas fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 34px;"
+            <i class="fas fa-plus p-2 rounded" style="color: white; background-color: rgb(210, 132, 30); height: 36px;"
                 data-toggle="tooltip" title="Create Customer"></i>
         </a>
       </div>
@@ -350,8 +352,8 @@
                   </div>  
                 </td>
 
-                <td  style="width: 10%;">
-                  <input type="text" value="0" name='HSN[]' id="HSN0" placeholder='HSN' style="width: 100px; " class="form-control HSN text-dark bg-light"/>
+                <td  style="width: 11%;">
+                  <input type="text" value="0" name='HSN[]' id="HSN0" placeholder='HSN' style="width: 80px; " class="form-control HSN text-dark bg-light"/>
                 </td>
 
                 
@@ -2479,7 +2481,7 @@ $(document).ready(function() {
           </td>
 
           <td style="width: 11%;">
-            <input type="number" name='HSN[]' id="HSN${roinc}" placeholder='HSN' class="form-control HSN text-dark bg-light" step="0.00" min="0"  style="width: 100px; " />
+            <input type="text" name='HSN[]' id="HSN${roinc}" placeholder='HSN' class="form-control HSN text-dark bg-light"   style="width: 80px; " />
           </td>
 
          
@@ -4227,15 +4229,25 @@ $(document).on('change','.disc',function(){ debugger
   });
 </script>
 
-<!-- <script>
-  $(document).ready(function(){
-    reloadCustomer();
+<script>
+  function validateForm() {
+      var paymentTerms = document.getElementById("date2").value;
+      if (paymentTerms === "") {
+          document.getElementById("date2").classList.add("is-invalid");
+          document.getElementById("date2").classList.remove("is-valid");
+          return false;
+      } else {
+          document.getElementById("date2").classList.remove("is-invalid");
+          document.getElementById("date2").classList.add("is-valid");
+          return true;
+      }
+  }
+
+  // Validate the form on submit
+  document.getElementById("forms").addEventListener("submit", function (event) {
+      if (!validateForm()) {
+          event.preventDefault();
+      }
   });
-</script> -->
- 
- <!-- <script>
-  $(document).ready(function(){
-   reloadItem();
-  });
-</script>  -->
+</script>
 {% endblock %}
